@@ -1,0 +1,16 @@
+---
+- hosts: all
+  remote_user: vagrant
+  vars:
+    jboss_install_dir: /opt/jboss
+  tasks:
+    - name: Create install directory
+      file: path={{ jboss_install_dir }} state=directory
+        owner=vagrant group=vagrant
+      sudo: yes
+
+    - name: Unzip JBoss
+      unarchive: 
+        src="/opt/jboss/installers/jboss-eap-6.3.0.zip"
+        dest={{ jboss_install_dir }}
+        creates="{{ jboss_install_dir }}/jboss-eap-6.3"
