@@ -3,14 +3,49 @@
   remote_user: vagrant
   vars:
     jboss_install_dir: /opt/jboss
+    jboss_home: "{{ jboss_install_dir }}/jboss-eap-6.3"
+    jboss_service_conf: "{{ jboss_home }}/bin/init.d/jboss-as.conf"
   tasks:
-    - name: Create install directory
+    - name: create install directory
       file: path={{ jboss_install_dir }} state=directory
         owner=vagrant group=vagrant
       sudo: yes
 
-    - name: Unzip JBoss
+    - name: unzip JBoss
       unarchive: 
         src="/opt/jboss/installers/jboss-eap-6.3.0.zip"
         dest={{ jboss_install_dir }}
-        creates="{{ jboss_install_dir }}/jboss-eap-6.3"
+        creates={{ jboss_home }}
+
+    - name: jboss service configuration - process user
+      lineinfile: 
+        dest="{{ jboss_home }}/bin/init.d/jboss-as.conf"
+        regexp="JBOSS_USER"
+        line="JBOSS_USER=vagrant"
+
+    - name: jboss service configuration - jboss home
+      lineinfile: 
+        dest={{ jboss_service_conf }}
+        regexp="JBOSS_HOME"
+        line="JBOSS_HOME={{ jboss_home }}"
+
+    - name: create service config dir
+      file: path=/etc/jboss-as state=directory
+        owner=vagrant group=vagrant mode=0755
+      sudo: yes
+
+    - name: link service config
+      file: state=link src={{ jboss_service_conf }}
+        path="/etc/jboss-as/jboss-as.conf"
+
+    - name: link service script
+      file: state=link src="{{ jboss_home }}/bin/init.d/jboss-as-standalone.sh"
+        path="/etc/init.d/jboss"
+      sudo: yes
+
+    - name: start and enable jboss
+      service: name=jboss state=started enabled=yes
+      sudo: yes
+
+    # TODO: Need to bind jboss to 0.0.0.0 by 1) edit standalone.xml or run CLI script
+    # TODO: Need to edit JBoss memory settings
