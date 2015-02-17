@@ -4,6 +4,10 @@
 
 == Setup
 
+. Install the Hostmanager plugin. This plugin maintains entries for all active VMs in each guest's `/etc/hosts`.
++
+ vagrant plugin install vagrant-hostmanager
+
 . Bring up both VMs
 +
  vagrant up
