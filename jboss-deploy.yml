@@ -1,14 +1,13 @@
 ---
 - hosts: all
   remote_user: vagrant
+  vars:
+    jboss_home: "/opt/jboss/jboss-eap-6.3"
   tasks:
-    - name: Copy deployment archive and unpack
-      unarchive: src=deploy-pkg/deployment.zip dest=/home/vagrant/xfer
-
-    - name: Verify JBoss is running
+    - name: verify JBoss is running
       service: name=jboss state=started
       sudo: yes
 
-    - name: Deploy artifacts
-      shell: /home/vagrant/jboss/jboss-eap-6.3/bin/jboss-cli.sh -c "deploy --force /home/vagrant/xfer/artifacts/jboss-helloworld.war"
-
+    - name: copy deployment
+      synchronize: src="deploy" dest="{{ jboss_home }}/standalone/deployments"
+        delete=yes
