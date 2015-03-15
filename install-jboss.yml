@@ -17,7 +17,7 @@
         dest={{ jboss_install_dir }}
         creates={{ jboss_home }}
 
-    - name: jboss service configuration - process user
+    - name: jboss service configuration - process owner
       lineinfile: 
         dest="{{ jboss_home }}/bin/init.d/jboss-as.conf"
         regexp="JBOSS_USER"
