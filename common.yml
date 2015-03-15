@@ -8,8 +8,8 @@
     - name: Install common packages
       yum: name={{ item }} state=present
       with_items:
-        - java-1.7.0-openjdk-1.7.0.71
-        - java-1.7.0-openjdk-devel-1.7.0.71
+        - java-1.7.0-openjdk-1.7.0.75
+        - java-1.7.0-openjdk-devel-1.7.0.75
       sudo: yes
 
     # move to separate file
