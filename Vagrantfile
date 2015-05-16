@@ -20,8 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "centos-6.4"
   config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210.box"
 
-  #config.vm.network "forwarded_port", guest: 8080, host: 8082
-  #config.vm.network "forwarded_port", guest: 9990, host: 9992
+
 
   # Hostmanager vagrant plugin edits /etc/hosts for guest vms.
   # This allows network communication via hostname to work between vms.
@@ -34,33 +33,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # TODO: consider creating for loop as shown at
   # http://docs.vagrantup.com/v2/vagrantfile/tips.html
-  config.vm.define "jboss-01" do |jboss|
-    jboss.vm.network "private_network", ip: "172.28.128.101"
+  config.vm.define "jon-01" do |jon|
+    jon.vm.network "private_network", ip: "172.28.128.101"
     
+    jon.vm.network "forwarded_port", guest: 7080, host: 7082
+
+    jon.vm.hostname = "jon-01.vagrant.dev"
+    jon.hostmanager.aliases = %w(jon-01)
+
+    jon.vm.provider "virtualbox" do |vb|
+      vb.memory = 3072
+      vb.cpus = 2
+    end
+  end
+
+  config.vm.define "jboss-01" do |jboss|
+    jboss.vm.network "private_network", ip: "172.28.128.102"
+
+    jboss.vm.network "forwarded_port", guest: 8080, host: 8082
+    jboss.vm.network "forwarded_port", guest: 9990, host: 9992
+
     jboss.vm.hostname = "jboss-01.vagrant.dev"
     jboss.hostmanager.aliases = %w(jboss-01)
   end
-
-  config.vm.define "jboss-02" do |jboss|
-    jboss.vm.network "private_network", ip: "172.28.128.102"
-
-    jboss.vm.hostname = "jboss-02.vagrant.dev"
-    jboss.hostmanager.aliases = %w(jboss-02)
-  end
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
 
 end
